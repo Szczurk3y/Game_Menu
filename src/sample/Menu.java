@@ -1,11 +1,10 @@
 package sample;
 
+import javafx.animation.TranslateTransition;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.ScrollBar;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.effect.Glow;
@@ -31,7 +30,7 @@ public class Menu extends Application implements WindowInterface {
     private GameMenu gameMenu;
 
     public Menu() {
-        windowType = WindowType.GAME;
+        windowType = WindowType.MENU;
     }
 
     @Override
@@ -61,9 +60,9 @@ public class Menu extends Application implements WindowInterface {
         stage.show();
     }
 
-
     public static class MenuButton extends StackPane {
         private Text text;
+        private boolean isClicked = false;
 
         public MenuButton(String name) {
             text = new Text(name);
@@ -83,7 +82,6 @@ public class Menu extends Application implements WindowInterface {
                 rectangle.setFill(Color.WHITE);
                 text.setFill(Color.BLACK);
             });
-
             setOnMouseExited(event -> {
                 rectangle.setTranslateX(0);
                 text.setTranslateX(0);
@@ -91,12 +89,33 @@ public class Menu extends Application implements WindowInterface {
                 text.setFill(Color.WHITE);
             });
 
-            DropShadow drop = new DropShadow(50, Color.WHITE);
-            drop.setInput(new Glow());
+            DropShadow dropShadow = new DropShadow(50, Color.WHITE);
+            dropShadow.setInput(new Glow());
 
-            setOnMousePressed(event -> setEffect(drop));
+            setOnMousePressed(event -> {
+                setEffect(dropShadow);
+            });
             setOnMouseReleased(event -> setEffect(null));
+
             getChildren().addAll(rectangle, text);
         }
+
+        public boolean isClicked() { return this.isClicked; }
+
+        protected TranslateTransition animateButton() {
+            TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), this);
+            tt.setToY(-50);
+            tt.play();
+            isClicked = true;
+            return tt;
+        }
+        protected TranslateTransition getBackButton() {
+            TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), this);
+            tt.setToY(0);
+            tt.play();
+            isClicked = false;
+            return tt;
+        }
+
     }
 }
