@@ -10,8 +10,7 @@ import javafx.util.Duration;
 import java.util.LinkedList;
 
 public class GameMenu extends Parent implements ButtonsInterface {
-    protected VBox firstMenu;
-    private VBox secondMenu;
+    protected VBox firstMenu, secondMenu, thirdMenu;
     private ScrollBar scrollBar = new ScrollBar();
     protected int offset;
     protected WindowType windowType;
@@ -24,7 +23,8 @@ public class GameMenu extends Parent implements ButtonsInterface {
         addingButtonEvents();
 
         firstMenu.getChildren().addAll(resumeButton, optionButton, exitButton);
-        secondMenu.getChildren().addAll(tempButton2, tempButton, soundButton, backButton);
+        secondMenu.getChildren().addAll(resolutionButton, tempButton2, tempButton, soundButton, backButton);
+        thirdMenu.getChildren().addAll(fullHdButton);
         getChildren().addAll(firstMenu);
     }
 
@@ -32,10 +32,13 @@ public class GameMenu extends Parent implements ButtonsInterface {
         offset = windowType.getWindowWidth()/2;
         firstMenu = new VBox(10);
         secondMenu = new VBox(10);
+        thirdMenu = new VBox(10);
         firstMenu.setTranslateX(windowType.getWindowWidth()/2 - 125);
         firstMenu.setTranslateY(windowType.getWindowHeight()/2 - 30);
         secondMenu.setTranslateX(windowType.getWindowWidth());
         secondMenu.setTranslateY(windowType.getWindowHeight()/2 - 30);
+        thirdMenu.setTranslateX(windowType.getWindowWidth()/2 - 125);
+        thirdMenu.setTranslateY(windowType.getWindowHeight());
     }
 
     private void addingButtonEvents() {
@@ -53,6 +56,21 @@ public class GameMenu extends Parent implements ButtonsInterface {
             tt.setOnFinished(event1 -> {
                 getChildren().remove(firstMenu);
             });
+        });
+
+        resolutionButton.setOnMouseClicked(event -> {
+            getChildren().add(thirdMenu);
+
+            TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), secondMenu);
+            TranslateTransition tt2 = new TranslateTransition(Duration.seconds(0.50), thirdMenu);
+
+            tt.setToY(secondMenu.getTranslateY() - offset);
+            tt2.setToY(windowType.getWindowHeight()/2 - 30);
+
+            tt.play();
+            tt2.play();
+
+            tt.setOnFinished(event1 -> getChildren().remove(secondMenu));
         });
 
         exitButton.setOnMouseClicked(event -> {
@@ -86,11 +104,29 @@ public class GameMenu extends Parent implements ButtonsInterface {
         });
 
         tempButton.setOnMouseClicked(event -> {
-            deleteAdditives();
-            lastClickedButton.setVisible(true);
-            lastClickedButton.getBackButton();
-            tempButton.animateButton();
-            lastClickedButton = tempButton;
+            if (!tempButton.isClicked()) {
+                deleteAdditives();
+                scrollBar.setTranslateX(0);
+                scrollBar.setTranslateY((-1 * tempButton.getHeight() * 3 - 25 ));
+                scrollBar.setMin(-50);
+                scrollBar.setMax(50);
+                scrollBar.setValue(0);
+                scrollBar.setMaxWidth(200);
+                scrollBar.setBackground(Background.EMPTY);
+
+                lastClickedButton.setVisible(true);
+                lastClickedButton.getBackButton();
+
+                tempButton.animateButton().setOnFinished(event1 -> {
+                    tempButton.setVisible(false);
+                    TranslateTransition tt = new TranslateTransition(Duration.seconds(0.10),  scrollBar);
+                    tt.setToX(35);
+                    tt.play();
+                    secondMenu.getChildren().add(scrollBar);
+                    additivesList.add(scrollBar);
+                });
+                lastClickedButton = tempButton;
+            }
         });
 
         tempButton2.setOnMouseClicked(event -> {

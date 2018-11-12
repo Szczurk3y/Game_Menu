@@ -105,7 +105,7 @@ public class Menu extends Application implements WindowInterface {
         protected TranslateTransition animateButton() {
             TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), this);
             isClicked = true;
-            tt.setToX(-100);
+            tt.setToX(-75);
             tt.play();
             return tt;
         }
