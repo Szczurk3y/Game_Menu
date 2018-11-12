@@ -104,14 +104,14 @@ public class Menu extends Application implements WindowInterface {
 
         protected TranslateTransition animateButton() {
             TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), this);
-            tt.setToY(-50);
-            tt.play();
             isClicked = true;
+            tt.setToX(-100);
+            tt.play();
             return tt;
         }
         protected TranslateTransition getBackButton() {
             TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), this);
-            tt.setToY(0);
+            tt.setToX(0);
             tt.play();
             isClicked = false;
             return tt;
