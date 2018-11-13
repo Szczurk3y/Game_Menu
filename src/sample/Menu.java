@@ -21,16 +21,15 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class Menu extends Application implements WindowInterface {
-
     private Stage stage;
     private Scene scene;
     private Pane root;
-    private WindowType windowType;
+    public static WindowType windowType;
     private ImageView imageView;
     private GameMenu gameMenu;
 
     public Menu() {
-        windowType = WindowType.MENU;
+        windowType = WindowType.GAME;
     }
 
     @Override
@@ -63,13 +62,16 @@ public class Menu extends Application implements WindowInterface {
     public static class MenuButton extends StackPane {
         private Text text;
         private boolean isClicked = false;
+        private Color backgroundColor;
+        private WindowType windowType = Menu.windowType;
 
-        public MenuButton(String name) {
+        public MenuButton(String name, Color color) {
+            backgroundColor = color;
             text = new Text(name);
-            text.setFont(text.getFont().font(20));
+            text.setFont(text.getFont().font(windowType.getWindowHeight()/30));
             text.setFill(Color.WHITE);
 
-            Rectangle rectangle = new Rectangle(250, 30);
+            Rectangle rectangle = new Rectangle(windowType.getWindowWidth()/4, windowType.getWindowHeight()/18);
             rectangle.setOpacity(0.6);
             rectangle.setFill(Color.BLACK);
             rectangle.setEffect(new GaussianBlur(3.5));
@@ -79,7 +81,7 @@ public class Menu extends Application implements WindowInterface {
             setOnMouseEntered(event -> {
                 rectangle.setTranslateX(10);
                 text.setTranslateX(10);
-                rectangle.setFill(Color.WHITE);
+                rectangle.setFill(backgroundColor);
                 text.setFill(Color.BLACK);
             });
             setOnMouseExited(event -> {

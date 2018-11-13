@@ -10,33 +10,39 @@ import javafx.util.Duration;
 
 import java.util.LinkedList;
 
-public class GameMenu extends Parent implements ButtonsInterface {
-    protected VBox firstMenu = new VBox(10);
-    protected VBox secondMenu = new VBox(10);
-    protected VBox thirdMenu = new VBox(10);
+public class elo extends Parent implements ButtonsInterface {
+    protected VBox firstMenu, secondMenu, thirdMenu;
     private ScrollBar scrollBar = new ScrollBar();
+    protected int offset;
     protected WindowType windowType;
     private Menu.MenuButton lastClickedButton = new Menu.MenuButton("", Color.WHITE);
     private LinkedList<Object> additives = new LinkedList<>();
+    private final double centerOfScreenX = windowType.getWindowWidth()/2 - (windowType.getWindowWidth()/4)/2;
+    private final double leftEdgeOScreen = -1 * windowType.getWindowWidth() -100;
+    private final double rightEdgeOfScreen = windowType.getWindowWidth() + 100;
 
-    public GameMenu(WindowType type) {
+    public elo(WindowType type) {
         windowType = type;
         init();
         addingButtonEvents();
-    }
-
-    private void init() {
-        firstMenu.setTranslateX(windowType.getCenterOfScreenX());
-        firstMenu.setTranslateY(windowType.getCenterOfScreenY());
-        secondMenu.setTranslateX(windowType.getRightEdgeOfScreenX());
-        secondMenu.setTranslateY(windowType.getCenterOfScreenY());
-        thirdMenu.setTranslateX(windowType.getCenterOfScreenX());
-        thirdMenu.setTranslateY(windowType.getCenterOfScreenY() + 30);
 
         firstMenu.getChildren().addAll(resumeButton, optionButton, exitButton);
         secondMenu.getChildren().addAll(resolutionButton, controllerButton, soundButton, backButton);
         thirdMenu.getChildren().addAll(fullHdButton, halfFullHdButton, hdButton, backButton2);
-        getChildren().add(firstMenu);
+        getChildren().addAll(firstMenu);
+    }
+
+    private void init() {
+        offset = windowType.getWindowWidth()/2;
+        firstMenu = new VBox(10);
+        secondMenu = new VBox(10);
+        thirdMenu = new VBox(10);
+        firstMenu.setTranslateX(centerOfScreenX);
+        firstMenu.setTranslateY(windowType.getWindowHeight()/2 - 30);
+        secondMenu.setTranslateX(windowType.getWindowWidth() + 100);
+        secondMenu.setTranslateY(windowType.getWindowHeight()/2 - 75);
+        thirdMenu.setTranslateX(windowType.getWindowWidth()/2 - 125);
+        thirdMenu.setTranslateY(windowType.getWindowHeight()/2);
     }
 
     private void addingButtonEvents() {
@@ -45,8 +51,8 @@ public class GameMenu extends Parent implements ButtonsInterface {
             TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), firstMenu);
             TranslateTransition tt2 = new TranslateTransition(Duration.seconds(0.45), secondMenu);
 
-            tt.setToX(windowType.getLeftEdgeOfScreenX());
-            tt2.setToX(windowType.getCenterOfScreenX());
+            tt.setToX(firstMenu.getTranslateX() - offset - 100);
+            tt2.setToX(windowType.getWindowWidth()/2 - (windowType.getWindowWidth()/4)/2);
 
             tt.play();
             tt2.play();
@@ -57,9 +63,9 @@ public class GameMenu extends Parent implements ButtonsInterface {
         });
 
         resolutionButton.setOnMouseClicked(event -> {
-            TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), secondMenu);
-            TranslateTransition tt2 = new TranslateTransition(Duration.seconds(0.75), thirdMenu);
-            tt.setToY(secondMenu.getTranslateY() + 40);
+            TranslateTransition tt = new TranslateTransition(Duration.seconds(0.15), secondMenu);
+            TranslateTransition tt2 = new TranslateTransition(Duration.seconds(0.55), thirdMenu);
+            tt.setToY(secondMenu.getTranslateY() + 15);
             tt2.setToY(secondMenu.getTranslateY());
             thirdMenu.setVisible(false);
             getChildren().add(thirdMenu);
@@ -130,8 +136,8 @@ public class GameMenu extends Parent implements ButtonsInterface {
         backButton.setOnMouseClicked(event -> {
             TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), secondMenu);
             TranslateTransition tt2 = new TranslateTransition(Duration.seconds(0.45), firstMenu);
-            tt.setToX(windowType.getRightEdgeOfScreenX());
-            tt2.setToX(windowType.getCenterOfScreenX());
+            tt.setToX(secondMenu.getTranslateX() + offset);
+            tt2.setToX(windowType.getWindowWidth()/2 - (windowType.getWindowWidth()/4)/2);
 
             if (!additivesList.isEmpty()) {
                 deleteAdditives();
