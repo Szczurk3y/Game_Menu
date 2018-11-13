@@ -24,7 +24,7 @@ public class GameMenu extends Parent implements ButtonsInterface {
 
         firstMenu.getChildren().addAll(resumeButton, optionButton, exitButton);
         secondMenu.getChildren().addAll(resolutionButton, tempButton2, tempButton, soundButton, backButton);
-        thirdMenu.getChildren().addAll(fullHdButton);
+        thirdMenu.getChildren().addAll(fullHdButton, halfFullHdButton, hdButton, backButton2);
         getChildren().addAll(firstMenu);
     }
 
@@ -35,19 +35,19 @@ public class GameMenu extends Parent implements ButtonsInterface {
         thirdMenu = new VBox(10);
         firstMenu.setTranslateX(windowType.getWindowWidth()/2 - 125);
         firstMenu.setTranslateY(windowType.getWindowHeight()/2 - 30);
-        secondMenu.setTranslateX(windowType.getWindowWidth());
-        secondMenu.setTranslateY(windowType.getWindowHeight()/2 - 30);
+        secondMenu.setTranslateX(windowType.getWindowWidth() + 100);
+        secondMenu.setTranslateY(windowType.getWindowHeight()/2 - 75);
         thirdMenu.setTranslateX(windowType.getWindowWidth()/2 - 125);
-        thirdMenu.setTranslateY(windowType.getWindowHeight());
+        thirdMenu.setTranslateY(windowType.getWindowHeight()/2);
     }
 
     private void addingButtonEvents() {
         optionButton.setOnMouseClicked(event -> {
             getChildren().add(secondMenu);
             TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), firstMenu);
-            TranslateTransition tt2 = new TranslateTransition(Duration.seconds(0.35), secondMenu);
+            TranslateTransition tt2 = new TranslateTransition(Duration.seconds(0.45), secondMenu);
 
-            tt.setToX(firstMenu.getTranslateX() - offset);
+            tt.setToX(firstMenu.getTranslateX() - offset - 100);
             tt2.setToX(windowType.getWindowWidth()/2 - 125);
 
             tt.play();
@@ -59,18 +59,21 @@ public class GameMenu extends Parent implements ButtonsInterface {
         });
 
         resolutionButton.setOnMouseClicked(event -> {
+            thirdMenu.setVisible(false);
             getChildren().add(thirdMenu);
+            TranslateTransition tt = new TranslateTransition(Duration.seconds(0.15), secondMenu);
+            TranslateTransition tt2 = new TranslateTransition(Duration.seconds(0.55), thirdMenu);
 
-            TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), secondMenu);
-            TranslateTransition tt2 = new TranslateTransition(Duration.seconds(0.50), thirdMenu);
-
-            tt.setToY(secondMenu.getTranslateY() - offset);
-            tt2.setToY(windowType.getWindowHeight()/2 - 30);
+            tt.setToY(secondMenu.getTranslateY() + 15);
+            tt2.setToY(secondMenu.getTranslateY());
 
             tt.play();
             tt2.play();
 
-            tt.setOnFinished(event1 -> getChildren().remove(secondMenu));
+            tt.setOnFinished(event1 -> {
+                thirdMenu.setVisible(true);
+                getChildren().remove(secondMenu);
+            });
         });
 
         exitButton.setOnMouseClicked(event -> {
@@ -138,24 +141,56 @@ public class GameMenu extends Parent implements ButtonsInterface {
         });
 
         backButton.setOnMouseClicked(event -> {
-            deleteAdditives();
-
             TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), secondMenu);
-            TranslateTransition tt2 = new TranslateTransition(Duration.seconds(0.35), firstMenu);
+            TranslateTransition tt2 = new TranslateTransition(Duration.seconds(0.45), firstMenu);
             tt.setToX(secondMenu.getTranslateX() + offset);
             tt2.setToX(windowType.getWindowWidth()/2 - 125);
 
-            lastClickedButton.setVisible(true);
-            lastClickedButton.getBackButton().setOnFinished(event1 -> {
+            if (!additivesList.isEmpty()) {
+                deleteAdditives();
+            }
+            if (!lastClickedButton.isVisible()) {
+                lastClickedButton.setVisible(true);
+            }
+            if (lastClickedButton.isClicked()) {
+                lastClickedButton.getBackButton().setOnFinished(event1 -> {
+                    getChildren().add(firstMenu);
+                    tt.play();
+                    tt2.play();
+                    tt.setOnFinished(event2 -> {
+                        getChildren().remove(secondMenu);
+                    });
+                });
+            } else {
                 getChildren().add(firstMenu);
                 tt.play();
                 tt2.play();
                 tt.setOnFinished(event2 -> {
                     getChildren().remove(secondMenu);
                 });
+            }
+
+        });
+
+        backButton2.setOnMouseClicked(event -> {
+            getChildren().add(secondMenu);
+            secondMenu.setVisible(false);
+            TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), thirdMenu);
+            TranslateTransition tt2 = new TranslateTransition(Duration.seconds(0.55), secondMenu);
+
+            tt.setToY(thirdMenu.getTranslateY() + 30);
+            tt2.setToY(thirdMenu.getTranslateY());
+
+            tt.play();
+            tt2.play();
+
+            tt.setOnFinished(event1 -> {
+                secondMenu.setVisible(true);
+                getChildren().remove(thirdMenu);
             });
         });
     }
+
     private void deleteAdditives() {
         for (Object x : additivesList) {
             secondMenu.getChildren().remove(x);

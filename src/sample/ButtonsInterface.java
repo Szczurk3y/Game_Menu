@@ -12,5 +12,8 @@ public interface ButtonsInterface {
     public Menu.MenuButton tempButton2 = new Menu.MenuButton("TEMP BUTTTON");
     public Menu.MenuButton resolutionButton = new Menu.MenuButton("VIDEO SETTINGS");
     public Menu.MenuButton fullHdButton = new Menu.MenuButton("1920 x 1080");
+    public Menu.MenuButton halfFullHdButton = new Menu.MenuButton("1600 x 900");
+    public Menu.MenuButton hdButton = new Menu.MenuButton("1080 x 720");
+    public Menu.MenuButton backButton2 = new Menu.MenuButton("BACK");
     public LinkedList<Object> additivesList = new LinkedList<>();
 }
