@@ -2,7 +2,7 @@ package sample;
 
 public enum WindowType implements WindowInterface {
     MENU(menuWindowWidth, menuWindowHeight, "Menu", "res/graphics/menu_background.jpg", false),
-    GAME(gameWindowWidth, gameWindowHeight, "Game", "res/graphics/menu_background.jpg", true);
+    FULLSCREAN(gameWindowWidth, gameWindowHeight, "Game", "res/graphics/menu_background.jpg", true);
 
     private final int windowWidth, windowHeight;
     private final String windowTitle, windowImagePath;
@@ -10,9 +10,9 @@ public enum WindowType implements WindowInterface {
     public final double centerOfScreenX;
     public final double centerOfScreenY;
     public final double leftEdgeOfScreenX;
-    public final double aboveEdgeOfScreenY;
+    public final double upperEdgeOfScreenY;
     public final double rightEdgeOfScreenX;
-    public final double belowEdgeOfScreenY;
+    public final double lowerEdgeOfScreenY;
 
     private WindowType(int width, int height, String title, String path, boolean isFullScreen) {
         this.windowTitle = title;
@@ -24,8 +24,8 @@ public enum WindowType implements WindowInterface {
         this.leftEdgeOfScreenX = -1 * windowWidth/2;
         this.rightEdgeOfScreenX = windowWidth;
         this.centerOfScreenY = windowHeight/2 - (windowHeight/18)/2 - 50;
-        this.belowEdgeOfScreenY = windowHeight;
-        this.aboveEdgeOfScreenY = -1 * windowHeight;
+        this.lowerEdgeOfScreenY = windowHeight;
+        this.upperEdgeOfScreenY = -1 * windowHeight;
     }
 
     public boolean isFullScreen() { return this.isFullScreen; }
@@ -58,12 +58,12 @@ public enum WindowType implements WindowInterface {
         return centerOfScreenY;
     }
 
-    public double getAboveEdgeOfScreenY() {
-        return aboveEdgeOfScreenY;
+    public double getUpperEdgeOfScreenY() {
+        return upperEdgeOfScreenY;
     }
 
-    public double getBelowEdgeOfScreenY() {
-        return belowEdgeOfScreenY;
+    public double getLowerEdgeOfScreenY() {
+        return lowerEdgeOfScreenY;
     }
 }
 

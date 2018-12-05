@@ -7,13 +7,13 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
-
 import java.util.LinkedList;
 
 public class GameMenu extends Parent implements ButtonsInterface {
     protected VBox firstMenu = new VBox(10);
     protected VBox secondMenu = new VBox(10);
     protected VBox thirdMenu = new VBox(10);
+    protected VBox fourthMenu = new VBox(10);
     private ScrollBar scrollBar = new ScrollBar();
     protected WindowType windowType;
     private Menu.MenuButton lastClickedButton = new Menu.MenuButton("", Color.WHITE);
@@ -32,10 +32,14 @@ public class GameMenu extends Parent implements ButtonsInterface {
         secondMenu.setTranslateY(windowType.getCenterOfScreenY());
         thirdMenu.setTranslateX(windowType.getCenterOfScreenX());
         thirdMenu.setTranslateY(windowType.getCenterOfScreenY() + 30);
+        fourthMenu.setTranslateX(windowType.getCenterOfScreenX());
+        fourthMenu.setTranslateY(windowType.getUpperEdgeOfScreenY());
 
         firstMenu.getChildren().addAll(resumeButton, optionButton, exitButton);
         secondMenu.getChildren().addAll(resolutionButton, controllerButton, soundButton, backButton);
-        thirdMenu.getChildren().addAll(fullHdButton, halfFullHdButton, hdButton, backButton2);
+        thirdMenu.getChildren().addAll(fullHdButton, halfFullHdButton, hdButton, thirdMenuBackButton);
+        fourthMenu.getChildren().addAll(fourthMenuBackButton);
+
         getChildren().add(firstMenu);
     }
 
@@ -120,10 +124,36 @@ public class GameMenu extends Parent implements ButtonsInterface {
         });
 
         controllerButton.setOnMouseClicked(event -> {
-            deleteAdditives();
-            lastClickedButton.setVisible(true);
-            lastClickedButton.getBackButton();
-            controllerButton.animateButton();
+            TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), secondMenu);
+            TranslateTransition tt2 = new TranslateTransition(Duration.seconds(0.50), fourthMenu);
+
+            tt.setToY(windowType.getLowerEdgeOfScreenY());
+            tt2.setToY(windowType.getCenterOfScreenY());
+
+            if(!additivesList.isEmpty()) {
+                deleteAdditives();
+            }
+            if (!lastClickedButton.isVisible()) {
+                lastClickedButton.setVisible(true);
+
+            }
+            if (lastClickedButton.isClicked()) {
+                lastClickedButton.getBackButton().setOnFinished(event1 -> {
+                    getChildren().add(fourthMenu);
+                    tt.play();
+                    tt2.play();
+                    tt.setOnFinished(event2 -> {
+                        getChildren().remove(secondMenu);
+                    });
+                });
+            } else {
+                getChildren().add(fourthMenu);
+                tt.play();
+                tt2.play();
+                tt.setOnFinished(event1 -> {
+                    getChildren().remove(secondMenu);
+                });
+            }
             lastClickedButton = controllerButton;
         });
 
@@ -159,7 +189,7 @@ public class GameMenu extends Parent implements ButtonsInterface {
 
         });
 
-        backButton2.setOnMouseClicked(event -> {
+        thirdMenuBackButton.setOnMouseClicked(event -> {
             getChildren().add(secondMenu);
             secondMenu.setVisible(false);
             TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), thirdMenu);
@@ -175,6 +205,10 @@ public class GameMenu extends Parent implements ButtonsInterface {
                 secondMenu.setVisible(true);
                 getChildren().remove(thirdMenu);
             });
+        });
+
+        fourthMenuBackButton.setOnMouseClicked(event -> {
+
         });
     }
 

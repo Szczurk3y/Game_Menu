@@ -29,7 +29,7 @@ public class Menu extends Application implements WindowInterface {
     private GameMenu gameMenu;
 
     public Menu() {
-        windowType = WindowType.GAME;
+        windowType = WindowType.MENU;
     }
 
     @Override
