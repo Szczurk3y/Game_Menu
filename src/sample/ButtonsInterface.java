@@ -23,5 +23,9 @@ public interface ButtonsInterface {
     public Menu.MenuButton hdButton = new Menu.MenuButton("1280 x 720", color);
     public Menu.MenuButton thirdMenuBackButton = new Menu.MenuButton("BACK", specialColor);
     // fourth menu buttons
+    public Menu.MenuButton moveUpButton = new Menu.MenuButton("MOVE UP", color);
+    public Menu.MenuButton moveDownButton = new Menu.MenuButton("MOVE DOWN", color);
+    public Menu.MenuButton moveLeftButton = new Menu.MenuButton("MOVE LEFT", color);
+    public Menu.MenuButton moveRightButton = new Menu.MenuButton("MOVE RIGHT", color);
     public Menu.MenuButton fourthMenuBackButton = new Menu.MenuButton("BACK", specialColor);
 }

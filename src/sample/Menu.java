@@ -61,12 +61,29 @@ public class Menu extends Application implements WindowInterface {
 
     public static class MenuButton extends StackPane {
         private Text text;
-        private boolean isClicked = false;
+        private String name;
         private Color backgroundColor;
         private WindowType windowType = Menu.windowType;
+        private boolean isClicked = false;
+        private boolean canBeClicked = true;
+
+        public MenuButton(String name) {
+            this.name = name;
+            this.backgroundColor = Color.WHITE;
+            someFunction();
+        }
 
         public MenuButton(String name, Color color) {
-            backgroundColor = color;
+            this.name = name;
+            this.backgroundColor = color;
+            someFunction();
+        }
+
+        public MenuButton(String name, Color color, Boolean canBeClicked) {
+
+        }
+
+        private void someFunction() {
             text = new Text(name);
             text.setFont(text.getFont().font(windowType.getWindowHeight()/30));
             text.setFill(Color.WHITE);

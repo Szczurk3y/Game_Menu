@@ -7,12 +7,12 @@ public enum WindowType implements WindowInterface {
     private final int windowWidth, windowHeight;
     private final String windowTitle, windowImagePath;
     private final boolean isFullScreen;
-    public final double centerOfScreenX;
-    public final double centerOfScreenY;
-    public final double leftEdgeOfScreenX;
-    public final double upperEdgeOfScreenY;
-    public final double rightEdgeOfScreenX;
-    public final double lowerEdgeOfScreenY;
+    private final double middleOfTheScreenX;
+    private final double middleOfTheScreenY;
+    private final double leftSideOfTheScreen;
+    private final double topOfTheScreen;
+    private final double rightSideOfTheScreen;
+    private final double bottomOfTheScreen;
 
     private WindowType(int width, int height, String title, String path, boolean isFullScreen) {
         this.windowTitle = title;
@@ -20,12 +20,12 @@ public enum WindowType implements WindowInterface {
         this.windowHeight = height;
         this.windowImagePath = path;
         this.isFullScreen = isFullScreen;
-        this.centerOfScreenX = windowWidth/2 - (windowWidth/4)/2;
-        this.leftEdgeOfScreenX = -1 * windowWidth/2;
-        this.rightEdgeOfScreenX = windowWidth;
-        this.centerOfScreenY = windowHeight/2 - (windowHeight/18)/2 - 50;
-        this.lowerEdgeOfScreenY = windowHeight;
-        this.upperEdgeOfScreenY = -1 * windowHeight;
+        this.middleOfTheScreenX = windowWidth/2 - (windowWidth/4)/2;
+        this.leftSideOfTheScreen = -1 * windowWidth/2;
+        this.rightSideOfTheScreen = windowWidth;
+        this.middleOfTheScreenY = windowHeight/2 - (windowHeight/18)/2 - 50;
+        this.bottomOfTheScreen = windowHeight;
+        this.topOfTheScreen = -1 * windowHeight;
     }
 
     public boolean isFullScreen() { return this.isFullScreen; }
@@ -44,26 +44,26 @@ public enum WindowType implements WindowInterface {
 
     public String getWindowImagePath() { return this.windowImagePath; }
 
-    public double getLeftEdgeOfScreenX() { return  this.leftEdgeOfScreenX; }
+    public double getLeftSideOfTheScreen() { return  this.leftSideOfTheScreen; }
 
-    public double getRightEdgeOfScreenX() {
-        return rightEdgeOfScreenX;
+    public double getRightSideOfTheScreen() {
+        return rightSideOfTheScreen;
     }
 
-    public double getCenterOfScreenX() {
-        return centerOfScreenX;
+    public double getMiddleOfTheScreenX() {
+        return middleOfTheScreenX;
     }
 
-    public double getCenterOfScreenY() {
-        return centerOfScreenY;
+    public double getMiddleOfTheScreenY() {
+        return middleOfTheScreenY;
     }
 
-    public double getUpperEdgeOfScreenY() {
-        return upperEdgeOfScreenY;
+    public double getTopOfTheScreen() {
+        return topOfTheScreen;
     }
 
-    public double getLowerEdgeOfScreenY() {
-        return lowerEdgeOfScreenY;
+    public double getBottomOfTheScreen() {
+        return bottomOfTheScreen;
     }
 }
 
