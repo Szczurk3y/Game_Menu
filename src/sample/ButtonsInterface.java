@@ -4,7 +4,7 @@ import javafx.scene.paint.Color;
 
 import java.util.LinkedList;
 
-public interface ButtonsInterface {
+public interface ButtonsInterface extends WindowInterface {
     public Color color = Color.WHITE;
     public Color specialColor = Color.MAGENTA;
     public LinkedList<Object> additivesList = new LinkedList<>();

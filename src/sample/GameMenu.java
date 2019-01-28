@@ -1,24 +1,34 @@
 package sample;
 
 import javafx.animation.TranslateTransition;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.ScrollBar;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 
 public class GameMenu extends Parent implements ButtonsInterface {
     protected String moveUpKey = "W", moveDownKey = "S", moveLeftKey = "A", moveRightKey = "D";
-    protected VBox firstMenu = new VBox(10);
-    protected VBox secondMenu = new VBox(10);
-    protected VBox thirdMenu = new VBox(10);
-    protected VBox fourthMenu = new VBox(5);
+    protected GridPane firstMenu = new GridPane();
+    protected GridPane secondMenu = new GridPane();
+    protected GridPane thirdMenu = new GridPane();
+    protected GridPane fourthMenu = new GridPane();
     private ScrollBar scrollBar = new ScrollBar();
+    private ImageView imageView;
     private Menu.MenuButton tempButton;
     protected WindowType windowType;
+    private Menu.ButtonType buttonType = Menu.ButtonType.STANDARDBUTTON;
     private Menu.MenuButton lastClickedButton = new Menu.MenuButton("", Color.WHITE);
     private LinkedList<Object> additives = new LinkedList<>();
 
@@ -29,23 +39,67 @@ public class GameMenu extends Parent implements ButtonsInterface {
     }
 
     private void init() {
-        firstMenu.setTranslateX(windowType.getMiddleOfTheScreenX());
-        firstMenu.setTranslateY(windowType.getMiddleOfTheScreenY());
-        secondMenu.setTranslateX(windowType.getRightSideOfTheScreen());
-        secondMenu.setTranslateY(windowType.getMiddleOfTheScreenY());
-        thirdMenu.setTranslateX(windowType.getMiddleOfTheScreenX());
-        thirdMenu.setTranslateY(windowType.getMiddleOfTheScreenY() + 30);
-        fourthMenu.setTranslateX(windowType.getMiddleOfTheScreenX());
-        fourthMenu.setTranslateY(windowType.getTopOfTheScreen());
+        try {
+            InputStream is = Files.newInputStream(Paths.get("res/graphics/tick.png"));
+            Image image = new Image(is);
+            is.close();
+            imageView = new ImageView(image);
+            imageView.setFitWidth(buttonType.getButtonWidth()/10);
+            imageView.setFitHeight(buttonType.getButtonHeight());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
 
+        firstMenu.setPadding(new Insets(10,10,10,10));
+        firstMenu.setVgap(8);
+        firstMenu.setHgap(10);
+        firstMenu.setTranslateX(windowType.getMiddleOfTheScreenX());
+        firstMenu.setTranslateY(windowType.getMiddleOfTheScreenY() - buttonType.getButtonHeight());
+
+        secondMenu.setPadding(new Insets(10,10,10,10));
+        secondMenu.setVgap(8);
+        secondMenu.setHgap(10);
+        secondMenu.setTranslateX(windowType.getRightSideOfTheScreen());
+        secondMenu.setTranslateY(windowType.getMiddleOfTheScreenY() - (buttonType.getButtonHeight() * 2));
+
+        thirdMenu.setPadding(new Insets(10,10,10,10));
+        thirdMenu.setVgap(8);
+        thirdMenu.setHgap(10);
+        thirdMenu.setTranslateX(windowType.getMiddleOfTheScreenX());
+        thirdMenu.setTranslateY(windowType.getMiddleOfTheScreenY() - buttonType.getButtonHeight() + 30);
+
+        fourthMenu.setPadding(new Insets(10,10,10,10));
+        fourthMenu.setVgap(8);
+        fourthMenu.setHgap(10);
+        fourthMenu.setTranslateX(windowType.getMiddleOfTheScreenX());
+        fourthMenu.setTranslateY(windowType.getMiddleOfTheScreenY() - (buttonType.getButtonHeight() * 2)+ 30);
+
+        GridPane.setConstraints(resumeButton, 0,0);
+        GridPane.setConstraints(optionButton, 0,1);
+        GridPane.setConstraints(exitButton, 0,2);
+        GridPane.setConstraints(resolutionButton, 0, 0);
+        GridPane.setConstraints(controllerButton, 0, 1);
+        GridPane.setConstraints(soundButton, 0, 2);
+        GridPane.setConstraints(backButton, 0, 3);
+        GridPane.setConstraints(fullHdButton, 0, 0);
+        GridPane.setConstraints(halfFullHdButton, 0, 1);
+        GridPane.setConstraints(hdButton, 0, 2);
+        GridPane.setConstraints(imageView, 1, 0);
+        GridPane.setConstraints(thirdMenuBackButton, 0, 3);
+        GridPane.setConstraints(moveUpButton, 0, 0);
+        GridPane.setConstraints(moveDownButton, 0, 1);
+        GridPane.setConstraints(moveLeftButton, 0, 2);
+        GridPane.setConstraints(moveRightButton, 0, 3);
+        GridPane.setConstraints(fourthMenuBackButton, 0, 4);
         firstMenu.getChildren().addAll(resumeButton, optionButton, exitButton);
         secondMenu.getChildren().addAll(resolutionButton, controllerButton, soundButton, backButton);
-        thirdMenu.getChildren().addAll(fullHdButton, halfFullHdButton, hdButton, thirdMenuBackButton);
+        thirdMenu.getChildren().addAll(fullHdButton, halfFullHdButton, hdButton, imageView, thirdMenuBackButton);
         fourthMenu.getChildren().addAll(moveUpButton, moveDownButton, moveLeftButton, moveRightButton, fourthMenuBackButton);
         getChildren().add(firstMenu);
     }
 
     private void addingButtonsEvents() {
+        // Buttons events of first menu
         optionButton.setOnMouseClicked(event -> {
             getChildren().add(secondMenu);
             TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), firstMenu);
@@ -61,7 +115,11 @@ public class GameMenu extends Parent implements ButtonsInterface {
                 getChildren().remove(firstMenu);
             });
         });
+        exitButton.setOnMouseClicked(event -> {
+            System.exit(0);
+        });
 
+        // Buttons events of second menu
         resolutionButton.setOnMouseClicked(event -> {
             TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), secondMenu);
             TranslateTransition tt2 = new TranslateTransition(Duration.seconds(0.75), thirdMenu);
@@ -94,20 +152,47 @@ public class GameMenu extends Parent implements ButtonsInterface {
                 });
             }
         });
+        controllerButton.setOnMouseClicked(event -> {
+            TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), secondMenu);
+            TranslateTransition tt2 = new TranslateTransition(Duration.seconds(0.75), fourthMenu);
+            tt.setToY(secondMenu.getTranslateY() + 40);
+            tt2.setToY(secondMenu.getTranslateY());
+            fourthMenu.setVisible(false);
+            getChildren().add(fourthMenu);
 
-        exitButton.setOnMouseClicked(event -> {
-            System.exit(0);
+            if(!additivesList.isEmpty()) {
+                deleteAdditives(secondMenu);
+            }
+            if (!lastClickedButton.isVisible()) {
+                lastClickedButton.setVisible(true);
+            }
+            if (lastClickedButton.isClicked()) {
+                lastClickedButton.getBackButton().setOnFinished(event1 -> {
+                    tt.play();
+                    tt2.play();
+                    tt.setOnFinished(event2 -> {
+                        fourthMenu.setVisible(true);
+                        getChildren().remove(secondMenu);
+                    });
+                });
+            } else {
+                tt.play();
+                tt2.play();
+                tt.setOnFinished(event1 -> {
+                    fourthMenu.setVisible(true);
+                    getChildren().remove(secondMenu);
+                });
+            }
         });
-
         soundButton.setOnMouseClicked(event -> {
             if (!soundButton.isClicked()) {
+                scrollBar.setTranslateX(scrollBar.getTranslateX()-35);
                 deleteAdditives(secondMenu);
-                scrollBar.setTranslateX(0);
-                scrollBar.setTranslateY(-1 * soundButton.getHeight() * 2 - 15);
+                GridPane.setConstraints(scrollBar, 0, 2);
                 scrollBar.setMin(-50);
                 scrollBar.setMax(50);
                 scrollBar.setValue(0);
-                scrollBar.setMaxWidth(200);
+                scrollBar.setMaxWidth(300);
                 scrollBar.setBackground(Background.EMPTY);
 
                 lastClickedButton.setVisible(true);
@@ -116,7 +201,7 @@ public class GameMenu extends Parent implements ButtonsInterface {
                 soundButton.animateButton().setOnFinished(event1 -> {
                     soundButton.setVisible(false);
                     TranslateTransition tt = new TranslateTransition(Duration.seconds(0.10),  scrollBar);
-                    tt.setToX(35);
+                    tt.setToX(scrollBar.getTranslateX()+35);
                     tt.play();
                     secondMenu.getChildren().add(scrollBar);
                     additivesList.add(scrollBar);
@@ -124,41 +209,6 @@ public class GameMenu extends Parent implements ButtonsInterface {
                 lastClickedButton = soundButton;
             }
         });
-
-        controllerButton.setOnMouseClicked(event -> {
-            TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), secondMenu);
-            TranslateTransition tt2 = new TranslateTransition(Duration.seconds(0.50), fourthMenu);
-
-            tt.setToY(windowType.getBottomOfTheScreen());
-            tt2.setToY(windowType.getMiddleOfTheScreenY());
-
-            if(!additivesList.isEmpty()) {
-                deleteAdditives(secondMenu);
-            }
-            if (!lastClickedButton.isVisible()) {
-                lastClickedButton.setVisible(true);
-
-            }
-            if (lastClickedButton.isClicked()) {
-                lastClickedButton.getBackButton().setOnFinished(event1 -> {
-                    getChildren().add(fourthMenu);
-                    tt.play();
-                    tt2.play();
-                    tt.setOnFinished(event2 -> {
-                        getChildren().remove(secondMenu);
-                    });
-                });
-            } else {
-                getChildren().add(fourthMenu);
-                tt.play();
-                tt2.play();
-                tt.setOnFinished(event1 -> {
-                    getChildren().remove(secondMenu);
-                });
-            }
-            lastClickedButton = controllerButton;
-        });
-
         backButton.setOnMouseClicked(event -> {
             TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), secondMenu);
             TranslateTransition tt2 = new TranslateTransition(Duration.seconds(0.45), firstMenu);
@@ -191,6 +241,16 @@ public class GameMenu extends Parent implements ButtonsInterface {
 
         });
 
+        // Buttons events of Video Settings
+        fullHdButton.setOnMouseClicked(event -> {
+            GridPane.setConstraints(imageView, 1, 0);
+        });
+        halfFullHdButton.setOnMouseClicked(event -> {
+            GridPane.setConstraints(imageView,1,1);
+        });
+        hdButton.setOnMouseClicked(event -> {
+            GridPane.setConstraints(imageView, 1,2);
+        });
         thirdMenuBackButton.setOnMouseClicked(event -> {
             getChildren().add(secondMenu);
             secondMenu.setVisible(false);
@@ -209,51 +269,55 @@ public class GameMenu extends Parent implements ButtonsInterface {
             });
         });
 
-        fourthMenuBackButton.setOnMouseClicked(event -> {
-            getChildren().add(secondMenu);
-            TranslateTransition tt = new TranslateTransition(Duration.seconds(0.40), fourthMenu);
-            TranslateTransition tt2 = new TranslateTransition(Duration.seconds(0.35), secondMenu);
-
-            tt.setToY(windowType.getTopOfTheScreen());
-            tt2.setToY(windowType.getMiddleOfTheScreenY());
-
-            tt.play();
-            tt2.play();
-
-            tt.setOnFinished(event1 -> {
-                getChildren().remove(fourthMenu);
-            });
-        });
-
+        // Buttons events of Controllet
         moveUpButton.setOnMouseEntered(event -> {
-            createTempButton(moveUpKey, moveUpButton);
+            createTempButton(moveUpKey, 0);
         });
         moveUpButton.setOnMouseExited(event -> {
             fourthMenu.getChildren().remove(tempButton);
         });
         moveDownButton.setOnMouseEntered(event -> {
-            createTempButton(moveDownKey, moveDownButton);
+            createTempButton(moveDownKey, 1);
         });
         moveDownButton.setOnMouseExited(event -> {
             fourthMenu.getChildren().remove(tempButton);
         });
         moveLeftButton.setOnMouseEntered(event -> {
-            createTempButton(moveLeftKey, moveLeftButton);
+            createTempButton(moveLeftKey, 2);
         });
         moveLeftButton.setOnMouseExited(event -> {
             fourthMenu.getChildren().remove(tempButton);
         });
         moveRightButton.setOnMouseEntered(event -> {
+            createTempButton(moveRightKey, 3);
+        });
+        moveRightButton.setOnMouseExited(event -> {
+            fourthMenu.getChildren().remove(tempButton);
+        });
+        fourthMenuBackButton.setOnMouseClicked(event -> {
+            getChildren().add(secondMenu);
+            secondMenu.setVisible(false);
+            TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), fourthMenu);
+            TranslateTransition tt2 = new TranslateTransition(Duration.seconds(0.50), secondMenu);
 
+            tt.setToY(fourthMenu.getTranslateY() + 30);
+            tt2.setToY(fourthMenu.getTranslateY());
+
+            tt.play();
+            tt2.play();
+
+            tt.setOnFinished(event1 -> {
+                secondMenu.setVisible(true);
+                getChildren().remove(fourthMenu);
+            });
         });
     }
-    private void createTempButton(String existingKey, Menu.MenuButton button) {
-        tempButton = new Menu.MenuButton(existingKey);
-        tempButton.setTranslateY(-1 * button.getHeight() * 2 - 15);
-        tempButton.setTranslateX(button.getTranslateX() + 100);
+    private void createTempButton(String existingKey, int row) {
+        tempButton = new Menu.MenuButton(existingKey, Color.WHITE, Menu.ButtonType.SMALLBUTTON);
+        GridPane.setConstraints(tempButton, 1, row);
         fourthMenu.getChildren().add(tempButton);
     }
-    private void deleteAdditives(VBox menu) {
+    private void deleteAdditives(GridPane menu) {
         for (Object x : additivesList) {
             menu.getChildren().remove(x);
         }

@@ -5,6 +5,7 @@ import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.ButtonType;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.effect.Glow;
@@ -27,9 +28,21 @@ public class Menu extends Application implements WindowInterface {
     public static WindowType windowType;
     private ImageView imageView;
     private GameMenu gameMenu;
+    public static int standardButtonWidth, standardButtonHeight;
+    public static int smallButtonWidth, smallButtonHeight;
+    public static int buttonFont;
 
     public Menu() {
         windowType = WindowType.MENU;
+        standardButtonWidth = windowType.getWindowWidth()/4;
+        standardButtonHeight = windowType.getWindowHeight()/18;
+        smallButtonWidth = windowType.getWindowWidth()/25;
+        smallButtonHeight = windowType.getWindowHeight()/18;
+        buttonFont = windowType.getWindowHeight()/30;
+    }
+
+    public static WindowType getWindowType() {
+        return windowType;
     }
 
     @Override
@@ -59,36 +72,68 @@ public class Menu extends Application implements WindowInterface {
         stage.show();
     }
 
+    public enum ButtonType {
+        STANDARDBUTTON(standardButtonWidth, standardButtonHeight, buttonFont),
+        SMALLBUTTON(smallButtonWidth, smallButtonHeight, buttonFont);
+
+        private final int buttonWidth;
+        private final int butotnHeight;
+        private final int font;
+
+        private ButtonType(int width, int height, int font) {
+            this.buttonWidth = width;
+            this.butotnHeight = height;
+            this.font = windowType.getWindowHeight()/30;
+        }
+
+        public int getButtonWidth() {
+            return buttonWidth;
+        }
+
+        public int getButtonHeight() {
+            return butotnHeight;
+        }
+
+        public int getFont() {
+            return font;
+        }
+    }
+
     public static class MenuButton extends StackPane {
         private Text text;
         private String name;
         private Color backgroundColor;
         private WindowType windowType = Menu.windowType;
+        private ButtonType buttonType;
         private boolean isClicked = false;
         private boolean canBeClicked = true;
 
         public MenuButton(String name) {
             this.name = name;
             this.backgroundColor = Color.WHITE;
-            someFunction();
+            creatingRectangle();
         }
 
         public MenuButton(String name, Color color) {
             this.name = name;
             this.backgroundColor = color;
-            someFunction();
+            this.buttonType = ButtonType.STANDARDBUTTON;
+            creatingRectangle();
         }
 
-        public MenuButton(String name, Color color, Boolean canBeClicked) {
-
+        public MenuButton(String name, Color color, ButtonType buttonType) {
+            this.name = name;
+            this.backgroundColor = color;
+            this.buttonType = buttonType;
+            creatingRectangle();
         }
 
-        private void someFunction() {
+        private void creatingRectangle() {
             text = new Text(name);
-            text.setFont(text.getFont().font(windowType.getWindowHeight()/30));
+            text.setFont(text.getFont().font(buttonType.getFont()));
             text.setFill(Color.WHITE);
 
-            Rectangle rectangle = new Rectangle(windowType.getWindowWidth()/4, windowType.getWindowHeight()/18);
+            Rectangle rectangle = new Rectangle(buttonType.getButtonWidth(), buttonType.getButtonHeight());
             rectangle.setOpacity(0.6);
             rectangle.setFill(Color.BLACK);
             rectangle.setEffect(new GaussianBlur(3.5));
