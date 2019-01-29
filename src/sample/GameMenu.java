@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.ScrollBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -19,7 +20,7 @@ import java.nio.file.Paths;
 import java.util.LinkedList;
 
 public class GameMenu extends Parent implements ButtonsInterface {
-    protected String moveUpKey = "W", moveDownKey = "S", moveLeftKey = "A", moveRightKey = "D";
+    private String moveUpKey = "W", moveDownKey = "S", moveLeftKey = "A", moveRightKey = "D";
     protected GridPane firstMenu = new GridPane();
     protected GridPane secondMenu = new GridPane();
     protected GridPane thirdMenu = new GridPane();
@@ -28,7 +29,7 @@ public class GameMenu extends Parent implements ButtonsInterface {
     private ImageView imageView;
     private Menu.MenuButton tempButton;
     protected WindowType windowType;
-    private Menu.ButtonType buttonType = Menu.ButtonType.STANDARDBUTTON;
+    private Menu.ButtonType buttonType = Menu.ButtonType.STANDARD;
     private Menu.MenuButton lastClickedButton = new Menu.MenuButton("", Color.WHITE);
     private LinkedList<Object> additives = new LinkedList<>();
 
@@ -274,26 +275,34 @@ public class GameMenu extends Parent implements ButtonsInterface {
             createTempButton(moveUpKey, 0);
         });
         moveUpButton.setOnMouseExited(event -> {
+            moveUpKey = tempButton.getText();
             fourthMenu.getChildren().remove(tempButton);
         });
+
         moveDownButton.setOnMouseEntered(event -> {
             createTempButton(moveDownKey, 1);
         });
         moveDownButton.setOnMouseExited(event -> {
+            moveDownKey = tempButton.getText();
             fourthMenu.getChildren().remove(tempButton);
         });
+
         moveLeftButton.setOnMouseEntered(event -> {
             createTempButton(moveLeftKey, 2);
         });
         moveLeftButton.setOnMouseExited(event -> {
+            moveLeftKey = tempButton.getText();
             fourthMenu.getChildren().remove(tempButton);
         });
+
         moveRightButton.setOnMouseEntered(event -> {
             createTempButton(moveRightKey, 3);
         });
         moveRightButton.setOnMouseExited(event -> {
+            moveRightKey = tempButton.getText();
             fourthMenu.getChildren().remove(tempButton);
         });
+
         fourthMenuBackButton.setOnMouseClicked(event -> {
             getChildren().add(secondMenu);
             secondMenu.setVisible(false);
@@ -312,10 +321,18 @@ public class GameMenu extends Parent implements ButtonsInterface {
             });
         });
     }
-    private void createTempButton(String existingKey, int row) {
-        tempButton = new Menu.MenuButton(existingKey, Color.WHITE, Menu.ButtonType.SMALLBUTTON);
+    private String createTempButton(String existingKey, int row) {
+        String keyPressed;
+        tempButton = new Menu.MenuButton(existingKey, Color.WHITE, Menu.ButtonType.SMALL);
+        getScene().setOnKeyPressed(event -> {
+            if (event.getCode().isLetterKey() || event.getCode().isArrowKey()) {
+                tempButton.setText(event.getCode().toString());
+            }
+        });
+        keyPressed = tempButton.getText();
         GridPane.setConstraints(tempButton, 1, row);
         fourthMenu.getChildren().add(tempButton);
+        return keyPressed;
     }
     private void deleteAdditives(GridPane menu) {
         for (Object x : additivesList) {

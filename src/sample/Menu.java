@@ -11,6 +11,7 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.effect.Glow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -23,7 +24,7 @@ import java.nio.file.Paths;
 
 public class Menu extends Application implements WindowInterface {
     private Stage stage;
-    private Scene scene;
+    public Scene scene;
     private Pane root;
     public static WindowType windowType;
     private ImageView imageView;
@@ -36,7 +37,7 @@ public class Menu extends Application implements WindowInterface {
         windowType = WindowType.MENU;
         standardButtonWidth = windowType.getWindowWidth()/4;
         standardButtonHeight = windowType.getWindowHeight()/18;
-        smallButtonWidth = windowType.getWindowWidth()/25;
+        smallButtonWidth = windowType.getWindowWidth()/15;
         smallButtonHeight = windowType.getWindowHeight()/18;
         buttonFont = windowType.getWindowHeight()/30;
     }
@@ -73,8 +74,8 @@ public class Menu extends Application implements WindowInterface {
     }
 
     public enum ButtonType {
-        STANDARDBUTTON(standardButtonWidth, standardButtonHeight, buttonFont),
-        SMALLBUTTON(smallButtonWidth, smallButtonHeight, buttonFont);
+        STANDARD(standardButtonWidth, standardButtonHeight, buttonFont),
+        SMALL(smallButtonWidth, smallButtonHeight, buttonFont);
 
         private final int buttonWidth;
         private final int butotnHeight;
@@ -107,6 +108,7 @@ public class Menu extends Application implements WindowInterface {
         private ButtonType buttonType;
         private boolean isClicked = false;
         private boolean canBeClicked = true;
+        protected Rectangle rectangle;
 
         public MenuButton(String name) {
             this.name = name;
@@ -117,7 +119,7 @@ public class Menu extends Application implements WindowInterface {
         public MenuButton(String name, Color color) {
             this.name = name;
             this.backgroundColor = color;
-            this.buttonType = ButtonType.STANDARDBUTTON;
+            this.buttonType = ButtonType.STANDARD;
             creatingRectangle();
         }
 
@@ -133,7 +135,7 @@ public class Menu extends Application implements WindowInterface {
             text.setFont(text.getFont().font(buttonType.getFont()));
             text.setFill(Color.WHITE);
 
-            Rectangle rectangle = new Rectangle(buttonType.getButtonWidth(), buttonType.getButtonHeight());
+            rectangle = new Rectangle(buttonType.getButtonWidth(), buttonType.getButtonHeight());
             rectangle.setOpacity(0.6);
             rectangle.setFill(Color.BLACK);
             rectangle.setEffect(new GaussianBlur(3.5));
@@ -160,7 +162,6 @@ public class Menu extends Application implements WindowInterface {
                 setEffect(dropShadow);
             });
             setOnMouseReleased(event -> setEffect(null));
-
             getChildren().addAll(rectangle, text);
         }
 
@@ -180,6 +181,13 @@ public class Menu extends Application implements WindowInterface {
             isClicked = false;
             return tt;
         }
-
+        protected void setText(String tempText) {
+            text.textProperty().setValue(tempText);
+            text.setFill(Color.LIGHTGREEN);
+            text.setFont(text.getFont().font(buttonType.font));
+        }
+        public String getText() {
+            return this.text.getText();
+        }
     }
 }

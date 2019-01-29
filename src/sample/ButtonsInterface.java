@@ -8,6 +8,7 @@ public interface ButtonsInterface extends WindowInterface {
     public Color color = Color.WHITE;
     public Color specialColor = Color.MAGENTA;
     public LinkedList<Object> additivesList = new LinkedList<>();
+
     // first menu buttons
     public Menu.MenuButton resumeButton = new Menu.MenuButton("RESUME", color);
     public Menu.MenuButton optionButton = new Menu.MenuButton("SETTINGS", specialColor);
