@@ -1,9 +1,15 @@
 package sample;
 
+import com.sun.javafx.scene.control.behavior.ScrollBarBehavior;
 import javafx.animation.TranslateTransition;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.control.ScrollBar;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
@@ -21,6 +27,7 @@ import java.util.LinkedList;
 
 public class GameMenu extends Parent implements ButtonsInterface {
     private String moveUpKey = "W", moveDownKey = "S", moveLeftKey = "A", moveRightKey = "D";
+    private String resolution = "1920 x 1080";
     protected GridPane firstMenu = new GridPane();
     protected GridPane secondMenu = new GridPane();
     protected GridPane thirdMenu = new GridPane();
@@ -190,10 +197,10 @@ public class GameMenu extends Parent implements ButtonsInterface {
                 scrollBar.setTranslateX(scrollBar.getTranslateX()-35);
                 deleteAdditives(secondMenu);
                 GridPane.setConstraints(scrollBar, 0, 2);
-                scrollBar.setMin(-50);
+                scrollBar.setMin(0);
                 scrollBar.setMax(50);
-                scrollBar.setValue(0);
-                scrollBar.setMaxWidth(300);
+                scrollBar.setValue(25);
+                scrollBar.setMaxWidth(soundButton.getWidth());
                 scrollBar.setBackground(Background.EMPTY);
 
                 lastClickedButton.setVisible(true);
@@ -204,6 +211,19 @@ public class GameMenu extends Parent implements ButtonsInterface {
                     TranslateTransition tt = new TranslateTransition(Duration.seconds(0.10),  scrollBar);
                     tt.setToX(scrollBar.getTranslateX()+35);
                     tt.play();
+                    tt.setOnFinished(event2 -> {
+                        tempButton = new Menu.MenuButton(String.valueOf((int)scrollBar.getValue()), Color.WHITE, Menu.ButtonType.SMALL);
+                        secondMenu.getChildren().add(tempButton);
+                        GridPane.setConstraints(tempButton, 1, 2);
+                        scrollBar.valueProperty().addListener(new ChangeListener<Number>() {
+                            @Override
+                            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                                tempButton.setText(String.valueOf(newValue.intValue()));
+                            }
+                        });
+                        additivesList.add(tempButton);
+                    });
+
                     secondMenu.getChildren().add(scrollBar);
                     additivesList.add(scrollBar);
                 });
@@ -245,14 +265,18 @@ public class GameMenu extends Parent implements ButtonsInterface {
         // Buttons events of Video Settings
         fullHdButton.setOnMouseClicked(event -> {
             GridPane.setConstraints(imageView, 1, 0);
+            resolution = "1920 x 1080";
         });
         halfFullHdButton.setOnMouseClicked(event -> {
             GridPane.setConstraints(imageView,1,1);
+            resolution = "1600 x 900";
         });
         hdButton.setOnMouseClicked(event -> {
             GridPane.setConstraints(imageView, 1,2);
+            resolution = "1280 x 720";
         });
         thirdMenuBackButton.setOnMouseClicked(event -> {
+            System.out.println(resolution);
             getChildren().add(secondMenu);
             secondMenu.setVisible(false);
             TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), thirdMenu);
