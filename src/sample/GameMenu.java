@@ -19,31 +19,60 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Formatter;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
 
 public class GameMenu extends Parent implements ButtonsInterface {
-    private String moveUpKey = "W", moveDownKey = "S", moveLeftKey = "A", moveRightKey = "D";
-    private String resolution = "1920 x 1080";
+    private String moveUpKey, moveDownKey, moveLeftKey, moveRightKey;
+    private int resolution;
+    private int volume;
+
     protected GridPane firstMenu = new GridPane();
     protected GridPane secondMenu = new GridPane();
     protected GridPane thirdMenu = new GridPane();
     protected GridPane fourthMenu = new GridPane();
+    protected WindowType windowType;
+
     private ScrollBar scrollBar = new ScrollBar();
     private ImageView imageView;
     private Menu.MenuButton tempButton;
-    protected WindowType windowType;
+    private String path = "res/files/Settings.txt";
+    private Formatter fileWriter;
+    private Scanner fileReader;
     private Menu.ButtonType buttonType = Menu.ButtonType.STANDARD;
     private Menu.MenuButton lastClickedButton = new Menu.MenuButton("", Color.WHITE);
     private LinkedList<Object> additives = new LinkedList<>();
 
     public GameMenu(WindowType type) {
         windowType = type;
+        try {
+            fileReader = new Scanner(new File(path));
+            moveUpKey = fileReader.nextLine();
+            moveDownKey = fileReader.nextLine();
+            moveLeftKey = fileReader.nextLine();
+            moveRightKey = fileReader.nextLine();
+            try {
+                resolution = Integer.parseInt(fileReader.nextLine());
+                volume = Integer.parseInt(fileReader.nextLine());
+            } catch (NumberFormatException ex) {
+                System.out.println(ex.getMessage());
+            }
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        } finally {
+            try {
+                fileReader.close();
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
         init();
-        addingButtonsEvents();
+        initEvents();
     }
 
     private void init() {
@@ -92,7 +121,7 @@ public class GameMenu extends Parent implements ButtonsInterface {
         GridPane.setConstraints(fullHdButton, 0, 0);
         GridPane.setConstraints(halfFullHdButton, 0, 1);
         GridPane.setConstraints(hdButton, 0, 2);
-        GridPane.setConstraints(imageView, 1, 0);
+        GridPane.setConstraints(imageView, 1, resolution);
         GridPane.setConstraints(thirdMenuBackButton, 0, 3);
         GridPane.setConstraints(moveUpButton, 0, 0);
         GridPane.setConstraints(moveDownButton, 0, 1);
@@ -106,7 +135,7 @@ public class GameMenu extends Parent implements ButtonsInterface {
         getChildren().add(firstMenu);
     }
 
-    private void addingButtonsEvents() {
+    private void initEvents() {
         // Buttons events of first menu
         optionButton.setOnMouseClicked(event -> {
             getChildren().add(secondMenu);
@@ -124,6 +153,14 @@ public class GameMenu extends Parent implements ButtonsInterface {
             });
         });
         exitButton.setOnMouseClicked(event -> {
+            try {
+                fileWriter = new Formatter(path);
+                fileWriter.format(moveUpKey + "\r\n" + moveDownKey + "\r\n" + moveLeftKey + "\r\n" + moveRightKey + "\r\n");
+                fileWriter.format(resolution + "\r\n" + String.valueOf(volume));
+                fileWriter.close();
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
             System.exit(0);
         });
 
@@ -199,8 +236,9 @@ public class GameMenu extends Parent implements ButtonsInterface {
                 GridPane.setConstraints(scrollBar, 0, 2);
                 scrollBar.setMin(0);
                 scrollBar.setMax(50);
-                scrollBar.setValue(25);
+                scrollBar.setValue(volume);
                 scrollBar.setMaxWidth(soundButton.getWidth());
+                scrollBar.setMaxHeight(soundButton.getHeight()/2);
                 scrollBar.setBackground(Background.EMPTY);
 
                 lastClickedButton.setVisible(true);
@@ -218,7 +256,8 @@ public class GameMenu extends Parent implements ButtonsInterface {
                         scrollBar.valueProperty().addListener(new ChangeListener<Number>() {
                             @Override
                             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-                                tempButton.setText(String.valueOf(newValue.intValue()));
+                                volume = newValue.intValue();
+                                tempButton.setText(String.valueOf(volume));
                             }
                         });
                         additivesList.add(tempButton);
@@ -265,15 +304,15 @@ public class GameMenu extends Parent implements ButtonsInterface {
         // Buttons events of Video Settings
         fullHdButton.setOnMouseClicked(event -> {
             GridPane.setConstraints(imageView, 1, 0);
-            resolution = "1920 x 1080";
+            resolution = 0;
         });
         halfFullHdButton.setOnMouseClicked(event -> {
             GridPane.setConstraints(imageView,1,1);
-            resolution = "1600 x 900";
+            resolution = 1;
         });
         hdButton.setOnMouseClicked(event -> {
             GridPane.setConstraints(imageView, 1,2);
-            resolution = "1280 x 720";
+            resolution = 2;
         });
         thirdMenuBackButton.setOnMouseClicked(event -> {
             System.out.println(resolution);
