@@ -2,6 +2,8 @@ package sample;
 
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -18,9 +20,12 @@ import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.LinkedList;
 
 public class Menu extends Application implements WindowInterface {
     private Stage stage;
@@ -34,25 +39,19 @@ public class Menu extends Application implements WindowInterface {
     public static int buttonFont;
 
     public Menu() {
-        windowType = WindowType.MENU;
+        windowType = WindowType.FULLSCREAN;
         standardButtonWidth = windowType.getWindowWidth()/4;
-        standardButtonHeight = windowType.getWindowHeight()/18;
+        standardButtonHeight = windowType.getWindowHeight()/13;
         smallButtonWidth = windowType.getWindowWidth()/15;
-        smallButtonHeight = windowType.getWindowHeight()/18;
+        smallButtonHeight = standardButtonHeight;
         buttonFont = windowType.getWindowHeight()/30;
-    }
-
-    public static WindowType getWindowType() {
-        return windowType;
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         stage = primaryStage;
-        stage.setMaxHeight(windowType.getWindowHeight());
-        stage.setMaxWidth(windowType.getWindowWidth());
         stage.setTitle(windowType.getWindowTitle());
-        stage.setResizable(false);
+        stage.setResizable(true);
 
         InputStream is = Files.newInputStream(Paths.get(windowType.getWindowImagePath()));
         Image image = new Image(is);
@@ -62,29 +61,37 @@ public class Menu extends Application implements WindowInterface {
         imageView.setFitHeight(windowType.getWindowHeight());
 
         root = new Pane();
-        root.setPrefSize(windowType.getWindowWidth(), windowType.getWindowHeight());
 
         gameMenu = new GameMenu(windowType);
         root.getChildren().addAll(imageView, gameMenu);
 
         stage.setFullScreen(windowType.isFullScreen());
-        scene = new Scene(root);
+        stage.setMinWidth(WindowType.menuWindowWidth);
+        stage.setMinHeight(WindowType.menuWindowHeight);
+        scene = new Scene(root, windowType.getWindowWidth(), windowType.getWindowHeight());
+        
         stage.setScene(scene);
         stage.show();
     }
 
+    public static WindowType getWindowType() {
+        return windowType;
+    }
+
     public enum ButtonType {
-        STANDARD(standardButtonWidth, standardButtonHeight, buttonFont),
-        SMALL(smallButtonWidth, smallButtonHeight, buttonFont);
+        STANDARD(standardButtonWidth, standardButtonHeight, buttonFont, "res/graphics/StandardButton.png"),
+        SMALL(smallButtonWidth, smallButtonHeight, buttonFont, "res/graphics/SmallButton.png");
 
         private final int buttonWidth;
         private final int butotnHeight;
         private final int font;
+        private final String path;
 
-        private ButtonType(int width, int height, int font) {
+        private ButtonType(int width, int height, int font, String path) {
             this.buttonWidth = width;
             this.butotnHeight = height;
             this.font = windowType.getWindowHeight()/30;
+            this.path = path;
         }
 
         public int getButtonWidth() {
@@ -103,69 +110,61 @@ public class Menu extends Application implements WindowInterface {
     public static class MenuButton extends StackPane {
         private Text text;
         private String name;
-        private Color backgroundColor;
         private WindowType windowType = Menu.windowType;
         private ButtonType buttonType;
         private boolean isClicked = false;
-        private boolean canBeClicked = true;
-        protected Rectangle rectangle;
+        protected ImageView button;
+        protected Color textColor = Color.BLACK;
+        public static LinkedList<MenuButton> allButtons = new LinkedList<>();
 
         public MenuButton(String name) {
             this.name = name;
-            this.backgroundColor = Color.WHITE;
-            creatingRectangle();
-        }
-
-        public MenuButton(String name, Color color) {
-            this.name = name;
-            this.backgroundColor = color;
             this.buttonType = ButtonType.STANDARD;
-            creatingRectangle();
+            initButton();
         }
 
-        public MenuButton(String name, Color color, ButtonType buttonType) {
+        public MenuButton(String name, ButtonType buttonType) {
             this.name = name;
-            this.backgroundColor = color;
             this.buttonType = buttonType;
-            creatingRectangle();
+            initButton();
         }
 
-        private void creatingRectangle() {
+        private void initButton() {
+            allButtons.add(this);
+            try {
+                InputStream is = Files.newInputStream(Paths.get(buttonType.path));
+                Image image = new Image(is);
+                is.close();
+                button = new ImageView(image);
+                button.setFitWidth(buttonType.getButtonWidth());
+                button.setFitHeight(buttonType.getButtonHeight());
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
             text = new Text(name);
             text.setFont(text.getFont().font(buttonType.getFont()));
-            text.setFill(Color.WHITE);
-
-            rectangle = new Rectangle(buttonType.getButtonWidth(), buttonType.getButtonHeight());
-            rectangle.setOpacity(0.6);
-            rectangle.setFill(Color.BLACK);
-            rectangle.setEffect(new GaussianBlur(3.5));
-
-            setAlignment(Pos.CENTER);
+            text.setFill(textColor);
 
             setOnMouseEntered(event -> {
-                rectangle.setTranslateX(10);
+                button.setTranslateX(10);
                 text.setTranslateX(10);
-                rectangle.setFill(backgroundColor);
-                text.setFill(Color.BLACK);
+                text.setFill(Color.GREEN);
             });
             setOnMouseExited(event -> {
-                rectangle.setTranslateX(0);
+                button.setTranslateX(0);
                 text.setTranslateX(0);
-                rectangle.setFill(Color.BLACK);
-                text.setFill(Color.WHITE);
+                text.setFill(textColor);
             });
-
-            DropShadow dropShadow = new DropShadow(50, Color.WHITE);
-            dropShadow.setInput(new Glow());
-
-            setOnMousePressed(event -> {
-                setEffect(dropShadow);
-            });
-            setOnMouseReleased(event -> setEffect(null));
-            getChildren().addAll(rectangle, text);
+            getChildren().addAll(button, text);
         }
 
-        public boolean isClicked() { return this.isClicked; }
+        public void changeWidth(int width) {
+            button.setFitWidth(width);
+        }
+
+        public void changeHeight(int height) {
+            button.setFitHeight(height);
+        }
 
         protected TranslateTransition animateButton() {
             TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), this);
@@ -174,6 +173,7 @@ public class Menu extends Application implements WindowInterface {
             tt.play();
             return tt;
         }
+
         protected TranslateTransition getBackButton() {
             TranslateTransition tt = new TranslateTransition(Duration.seconds(0.25), this);
             tt.setToX(0);
@@ -181,13 +181,16 @@ public class Menu extends Application implements WindowInterface {
             isClicked = false;
             return tt;
         }
-        protected void setText(String tempText) {
-            text.textProperty().setValue(tempText);
-            text.setFill(Color.LIGHTGREEN);
-            text.setFont(text.getFont().font(buttonType.font));
-        }
+
         public String getText() {
             return this.text.getText();
         }
+
+        protected void setText(String tempText) {
+            text.textProperty().setValue(tempText);
+            text.setFill(Color.GREEN);
+        }
+
+        public boolean isClicked() { return this.isClicked; }
     }
 }

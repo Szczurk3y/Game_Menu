@@ -13,9 +13,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.util.Duration;
 
@@ -45,7 +43,7 @@ public class GameMenu extends Parent implements ButtonsInterface {
     private Formatter fileWriter;
     private Scanner fileReader;
     private Menu.ButtonType buttonType = Menu.ButtonType.STANDARD;
-    private Menu.MenuButton lastClickedButton = new Menu.MenuButton("", Color.WHITE);
+    private Menu.MenuButton lastClickedButton = new Menu.MenuButton("");
     private LinkedList<Object> additives = new LinkedList<>();
 
     public GameMenu(WindowType type) {
@@ -81,8 +79,8 @@ public class GameMenu extends Parent implements ButtonsInterface {
             Image image = new Image(is);
             is.close();
             imageView = new ImageView(image);
-            imageView.setFitWidth(buttonType.getButtonWidth()/10);
-            imageView.setFitHeight(buttonType.getButtonHeight());
+            imageView.setFitWidth(Menu.ButtonType.SMALL.getButtonWidth());
+            imageView.setFitHeight(Menu.ButtonType.SMALL.getButtonHeight());
         } catch (IOException ex) {
             ex.printStackTrace();
         }
@@ -128,10 +126,12 @@ public class GameMenu extends Parent implements ButtonsInterface {
         GridPane.setConstraints(moveLeftButton, 0, 2);
         GridPane.setConstraints(moveRightButton, 0, 3);
         GridPane.setConstraints(fourthMenuBackButton, 0, 4);
+        GridPane.setRowIndex(resetButton, 3);
+        resetButton.setTranslateX(resetButton.getTranslateX() - Menu.ButtonType.STANDARD.getButtonWidth()/1.25);
         firstMenu.getChildren().addAll(resumeButton, optionButton, exitButton);
         secondMenu.getChildren().addAll(resolutionButton, controllerButton, soundButton, backButton);
         thirdMenu.getChildren().addAll(fullHdButton, halfFullHdButton, hdButton, imageView, thirdMenuBackButton);
-        fourthMenu.getChildren().addAll(moveUpButton, moveDownButton, moveLeftButton, moveRightButton, fourthMenuBackButton);
+        fourthMenu.getChildren().addAll(resetButton, moveUpButton, moveDownButton, moveLeftButton, moveRightButton, fourthMenuBackButton);
         getChildren().add(firstMenu);
     }
 
@@ -239,7 +239,7 @@ public class GameMenu extends Parent implements ButtonsInterface {
                 scrollBar.setValue(volume);
                 scrollBar.setMaxWidth(soundButton.getWidth());
                 scrollBar.setMaxHeight(soundButton.getHeight()/2);
-                scrollBar.setBackground(Background.EMPTY);
+                scrollBar.setBackground(new Background(new BackgroundFill(Color.CRIMSON, CornerRadii.EMPTY, Insets.EMPTY)));
 
                 lastClickedButton.setVisible(true);
                 lastClickedButton.getBackButton();
@@ -250,7 +250,7 @@ public class GameMenu extends Parent implements ButtonsInterface {
                     tt.setToX(scrollBar.getTranslateX()+35);
                     tt.play();
                     tt.setOnFinished(event2 -> {
-                        tempButton = new Menu.MenuButton(String.valueOf((int)scrollBar.getValue()), Color.WHITE, Menu.ButtonType.SMALL);
+                        tempButton = new Menu.MenuButton(String.valueOf((int)scrollBar.getValue()), Menu.ButtonType.SMALL);
                         secondMenu.getChildren().add(tempButton);
                         GridPane.setConstraints(tempButton, 1, 2);
                         scrollBar.valueProperty().addListener(new ChangeListener<Number>() {
@@ -334,34 +334,61 @@ public class GameMenu extends Parent implements ButtonsInterface {
         });
 
         // Buttons events of Controllet
+        resetButton.setOnMouseEntered(event -> {
+            createTempButton(moveUpKey, 0);
+            createTempButton(moveDownKey, 1);
+            createTempButton(moveLeftKey, 2);
+            createTempButton(moveRightKey, 3);
+        });
+        resetButton.setOnMouseClicked(event -> {
+            moveUpKey = "W";
+            moveDownKey = "S";
+            moveLeftKey = "A";
+            moveRightKey = "D";
+            createTempButton(moveUpKey, 0);
+            createTempButton(moveDownKey, 1);
+            createTempButton(moveLeftKey, 2);
+            createTempButton(moveRightKey, 3);
+        });
+        resetButton.setOnMouseExited(event -> {
+            deleteAdditives(fourthMenu);
+        });
         moveUpButton.setOnMouseEntered(event -> {
+            moveUpButton.setTranslateX(10);
             createTempButton(moveUpKey, 0);
         });
         moveUpButton.setOnMouseExited(event -> {
+            moveUpButton.setTranslateX(0);
             moveUpKey = tempButton.getText();
             fourthMenu.getChildren().remove(tempButton);
         });
 
         moveDownButton.setOnMouseEntered(event -> {
+            moveDownButton.setTranslateX(10);
             createTempButton(moveDownKey, 1);
         });
         moveDownButton.setOnMouseExited(event -> {
+            moveDownButton.setTranslateX(0);
             moveDownKey = tempButton.getText();
             fourthMenu.getChildren().remove(tempButton);
         });
 
         moveLeftButton.setOnMouseEntered(event -> {
+            moveLeftButton.setTranslateX(10);
             createTempButton(moveLeftKey, 2);
         });
         moveLeftButton.setOnMouseExited(event -> {
+            moveLeftButton.setTranslateX(0);
             moveLeftKey = tempButton.getText();
             fourthMenu.getChildren().remove(tempButton);
         });
 
         moveRightButton.setOnMouseEntered(event -> {
+            moveRightButton.setTranslateX(10);
             createTempButton(moveRightKey, 3);
         });
         moveRightButton.setOnMouseExited(event -> {
+            moveRightButton.setTranslateX(0);
             moveRightKey = tempButton.getText();
             fourthMenu.getChildren().remove(tempButton);
         });
@@ -386,7 +413,8 @@ public class GameMenu extends Parent implements ButtonsInterface {
     }
     private String createTempButton(String existingKey, int row) {
         String keyPressed;
-        tempButton = new Menu.MenuButton(existingKey, Color.WHITE, Menu.ButtonType.SMALL);
+        tempButton = new Menu.MenuButton(existingKey, Menu.ButtonType.SMALL);
+        tempButton.setTranslateX(10);
         getScene().setOnKeyPressed(event -> {
             if (event.getCode().isLetterKey() || event.getCode().isArrowKey()) {
                 tempButton.setText(event.getCode().toString());
@@ -395,6 +423,7 @@ public class GameMenu extends Parent implements ButtonsInterface {
         keyPressed = tempButton.getText();
         GridPane.setConstraints(tempButton, 1, row);
         fourthMenu.getChildren().add(tempButton);
+        additivesList.add(tempButton);
         return keyPressed;
     }
     private void deleteAdditives(GridPane menu) {
