@@ -1,6 +1,6 @@
-W
-S
-A
-D
-0
-36
+UP
+DOWN
+LEFT
+RIGHT
+2
+30
