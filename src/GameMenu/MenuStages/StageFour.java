@@ -11,6 +11,8 @@ public class StageFour extends StageBuilder {
     private MenuHandler menuHandler;
 
     public StageFour(MenuHandler menuHandler) {
+        super(10, 8, 10, menuHandler.windowType.getMiddleOfTheScreenX(),
+                menuHandler.windowType.getMiddleOfTheScreenY() + (Menu.ButtonType.STANDARD.getButtonHeight()));
         this.menuHandler = menuHandler;
         general_initialize();
         events_initialize();
@@ -18,18 +20,14 @@ public class StageFour extends StageBuilder {
 
     @Override
     protected void general_initialize() {
-        setPadding(new Insets(10,10,10,10));
-        setVgap(8);
-        setHgap(10);
-        setTranslateX(menuHandler.windowType.getMiddleOfTheScreenX());
-        setTranslateY(menuHandler.windowType.getMiddleOfTheScreenY() + (Menu.ButtonType.STANDARD.getButtonHeight()));
         setConstraints(moveUpButton, 0, 0);
         setConstraints(moveDownButton, 0, 1);
         setConstraints(moveLeftButton, 0, 2);
         setConstraints(moveRightButton, 0, 3);
         setConstraints(stageFour_backButton, 0, 4);
         setRowIndex(resetButton, 3);
-        getChildren().addAll(resetButton, moveUpButton, moveDownButton, moveLeftButton, moveRightButton, stageFour_backButton);
+        resetButton.setTranslateX(-Menu.ButtonType.STANDARD.getButtonWidth()/1.5);
+        getChildren().addAll(moveUpButton, moveDownButton, moveLeftButton, moveRightButton, stageFour_backButton, resetButton);
     }
 
     @Override

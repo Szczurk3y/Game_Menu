@@ -27,4 +27,10 @@ public interface ButtonsInterface {
     public Menu.MenuButton moveLeftButton = new Menu.MenuButton("MOVE LEFT");
     public Menu.MenuButton moveRightButton = new Menu.MenuButton("MOVE RIGHT");
     public Menu.MenuButton stageFour_backButton = new Menu.MenuButton("BACK");
+    // Lists
+    public LinkedList<Menu.MenuButton> stageOne_buttonsList = new LinkedList<>();
+    public LinkedList<Menu.MenuButton> stageTwo_buttonsList = new LinkedList<>();
+    public LinkedList<Menu.MenuButton> stageThree_buttonsList = new LinkedList<>();
+    public LinkedList<Menu.MenuButton> stageFour_buttonsList = new LinkedList<>();
+
 }

@@ -21,6 +21,8 @@ public class StageTwo extends StageBuilder {
     private Menu.MenuButton tempButton;
 
     public StageTwo(MenuHandler menuHandler) {
+        super(10, 8, 10, menuHandler.windowType.getRightSideOfTheScreen(),
+                menuHandler.windowType.getMiddleOfTheScreenY() - (Menu.ButtonType.STANDARD.getButtonHeight()));
         this.menuHandler = menuHandler;
         general_initialize();
         events_initialize();
@@ -28,11 +30,6 @@ public class StageTwo extends StageBuilder {
 
     @Override
     protected void general_initialize() {
-        setPadding(new Insets(10,10,10,10));
-        setVgap(8);
-        setHgap(10);
-        setTranslateX(menuHandler.windowType.getRightSideOfTheScreen()); // to do animation from the right side to the middle
-        setTranslateY(menuHandler.windowType.getMiddleOfTheScreenY() - (Menu.ButtonType.STANDARD.getButtonHeight())); //
         setConstraints(resolutionButton, 0, 0);
         setConstraints(controllerButton, 0, 1);
         setConstraints(soundButton, 0, 2);

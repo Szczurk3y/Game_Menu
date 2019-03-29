@@ -19,6 +19,8 @@ public class StageThree extends StageBuilder {
     private MenuHandler menuHandler;
 
     public StageThree(MenuHandler menuHandler) {
+        super(10, 8, 10, menuHandler.windowType.getMiddleOfTheScreenX(),
+                menuHandler.windowType.getMiddleOfTheScreenY() - Menu.ButtonType.STANDARD.getButtonHeight() + 30); // + 30 to do animation from the top a little down
         this.menuHandler = menuHandler;
         general_initialize();
         events_initialize();
@@ -26,11 +28,6 @@ public class StageThree extends StageBuilder {
 
     @Override
     protected void general_initialize() {
-        setPadding(new Insets(10,10,10,10));
-        setVgap(8);
-        setHgap(10);
-        setTranslateX(menuHandler.windowType.getMiddleOfTheScreenX());
-        setTranslateY(menuHandler.windowType.getMiddleOfTheScreenY() - Menu.ButtonType.STANDARD.getButtonHeight() + 30); // + 30 to do animation from the top a little down
         try {
             InputStream is = Files.newInputStream(Paths.get("res/graphics/tick.png"));
             Image image = new Image(is);

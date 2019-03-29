@@ -1,6 +1,5 @@
 package GameMenu.MenuStages;
 
-import GameMenu.Interfaces.ButtonsInterface;
 import GameMenu.Menu;
 import GameMenu.MenuHandler;
 import GameMenu.WindowType;
@@ -13,11 +12,12 @@ import javafx.util.Duration;
 import java.util.Formatter;
 
 public class StageOne extends StageBuilder {
-    private Formatter fileWriter;
-    MenuHandler menuHandler;
+    private static Formatter fileWriter;
+    private static MenuHandler menuHandler;
 
     public StageOne(MenuHandler menuHandler) {
-        super();
+        super(10, 8, 10, menuHandler.windowType.getMiddleOfTheScreenX(),
+                menuHandler.windowType.getMiddleOfTheScreenY() - Menu.ButtonType.STANDARD.getButtonHeight());
         this.menuHandler = menuHandler;
         general_initialize();
         events_initialize();
@@ -25,11 +25,6 @@ public class StageOne extends StageBuilder {
 
     @Override
     protected void general_initialize() {
-        setPadding(new Insets(10,10,10,10));
-        setVgap(8);
-        setHgap(10);
-        setTranslateX(menuHandler.windowType.getMiddleOfTheScreenX());
-        setTranslateY(menuHandler.windowType.getMiddleOfTheScreenY() - Menu.ButtonType.STANDARD.getButtonHeight());
         setConstraints(resumeButton, 0,0);
         setConstraints(optionButton, 0,1);
         setConstraints(stageOne_exitButton, 0,2);

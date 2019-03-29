@@ -3,4 +3,4 @@ DOWN
 LEFT
 RIGHT
 2
-30
+31

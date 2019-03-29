@@ -1,24 +1,32 @@
 package GameMenu;
 
+import GameMenu.Interfaces.ButtonsInterface;
 import GameMenu.Interfaces.WindowInterface;
+import GameMenu.MenuStages.StageOne;
 import javafx.animation.TranslateTransition;
 import javafx.application.Application;
+import javafx.event.*;
+import javafx.event.Event;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.lwjgl.input.Mouse;
 
-import javax.security.auth.Destroyable;
+import java.awt.*;
+import java.awt.event.InputEvent;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.LinkedList;
 
-public class Menu extends Application implements WindowInterface, Destroyable {
+public class Menu extends Application implements WindowInterface, ButtonsInterface {
     private Stage stage;
     private Scene scene;
     private Pane pane;
@@ -28,6 +36,8 @@ public class Menu extends Application implements WindowInterface, Destroyable {
     private ImageView imageView;
     private MenuHandler menuHandler;
     public static final WindowType windowType = WindowType.MENU;
+    public static int next = -1;
+    public LinkedList<Menu.MenuButton> currentStage = new LinkedList<>();
 
     public Menu() {
         standardButtonWidth = windowType.getWindowWidth()/4;
@@ -51,8 +61,46 @@ public class Menu extends Application implements WindowInterface, Destroyable {
         imageView.setFitHeight(windowType.getWindowHeight());
 
         pane = new Pane();
-        menuHandler = new MenuHandler(windowType);
+        menuHandler = new MenuHandler(windowType, currentStage);
+
         scene = new Scene(pane, windowType.getWindowWidth(), windowType.getWindowHeight());
+
+        scene.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.TAB && next > 0) {
+                currentStage.get(next).unSelect();
+                next--;
+                currentStage.get(next).select();
+                System.out.println("TAB");
+                System.out.println("Next: " + next);
+            } else if (event.getCode().isLetterKey() || event.getCode().isArrowKey()) {
+                MenuHandler.tempButton.setText(event.getCode().toString());
+            } else if (event.getCode() == KeyCode.CAPS && next < currentStage.size()-1) {
+                if (next > -1)
+                    currentStage.get(next).unSelect();
+                next++;
+                currentStage.get(next).select();
+                System.out.println("CAPSLOCK");
+                System.out.println("Next: " + next);
+            } else if(event.getCode() == KeyCode.ENTER) {
+                EventDispatcher dispatcher = new EventDispatcher() {
+                    @Override
+                    public Event dispatchEvent(Event event, EventDispatchChain tail) {
+                        event.getEventType();
+
+                        return EventType;
+                    }
+                };
+                currentStage.get(next).getEventDispatcher().dispatchEvent();
+//                try {
+//                    Robot robot = new Robot();
+//                    robot.mouseMove((int)currentStage. (int)currentStage.get(next).getScaleY());
+//                    robot.mousePress(InputEvent.BUTTON2_DOWN_MASK);
+//                    robot.mouseRelease(InputEvent.BUTTON2_DOWN_MASK);
+//                } catch (AWTException ex) {
+//                    System.out.println(ex.getMessage());
+//                }
+            }
+        });
 
         pane.getChildren().addAll(imageView, menuHandler);
         stage.setFullScreen(windowType.isFullScreen());

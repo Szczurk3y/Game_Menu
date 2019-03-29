@@ -9,6 +9,7 @@ import javafx.animation.TranslateTransition;
 import javafx.scene.Parent;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
 import javafx.util.Duration;
 
@@ -25,18 +26,21 @@ public class MenuHandler extends Parent implements ButtonsInterface {
     public int resolution;
     public int volume;
     public Menu.MenuButton lastClickedButton = new Menu.MenuButton("");
-    public Menu.MenuButton tempButton;
+    public static Menu.MenuButton tempButton;
     public StageOne stageOne;
     public StageTwo stageTwo;
     public StageThree stageThree;
     public StageFour stageFour;
-
-    public MenuHandler(WindowType windowType) {
+    public LinkedList<Menu.MenuButton> currentStage;
+    public MenuHandler(WindowType windowType, LinkedList<Menu.MenuButton> currentStage) {
         this.windowType = windowType;
+        this.currentStage = currentStage;
         general_initialize();
+        events_initialize();
     }
 
     private void general_initialize() {
+        currentIsStageOne();
         try {
             Scanner scanner = new Scanner(new File("res/files/Settings.txt"));
             moveUpKey = scanner.nextLine();
@@ -53,7 +57,6 @@ public class MenuHandler extends Parent implements ButtonsInterface {
         stageTwo = new StageTwo(this);
         stageThree = new StageThree(this);
         stageFour = new StageFour(this);
-        events_initialize();
         // setting up first visible stage
         getChildren().add(stageOne);
     }
@@ -72,6 +75,10 @@ public class MenuHandler extends Parent implements ButtonsInterface {
 
             tt.setOnFinished(event1 -> {
                 getChildren().remove(stageOne);
+            });
+
+            tt2.setOnFinished(event1 -> {
+                currentIsStageTwo();
             });
         });
 
@@ -93,19 +100,19 @@ public class MenuHandler extends Parent implements ButtonsInterface {
                 lastClickedButton.getBackButton().setOnFinished(event1 -> {
                     tt.play();
                     tt2.play();
-                    tt.setOnFinished(event2 -> {
-                        stageThree.setVisible(true);
-                        getChildren().remove(stageTwo);
-                    });
                 });
             } else {
                 tt.play();
                 tt2.play();
-                tt.setOnFinished(event1 -> {
-                    stageThree.setVisible(true);
-                    getChildren().remove(stageTwo);
-                });
             }
+            tt.setOnFinished(event1 -> {
+                stageThree.setVisible(true);
+                getChildren().remove(stageTwo);
+            });
+
+            tt2.setOnFinished(event1 -> {
+                currentIsStageThree();
+            });
         });
 
         controllerButton.setOnMouseClicked(event -> {
@@ -126,19 +133,21 @@ public class MenuHandler extends Parent implements ButtonsInterface {
                 lastClickedButton.getBackButton().setOnFinished(event1 -> {
                     tt.play();
                     tt2.play();
-                    tt.setOnFinished(event2 -> {
-                        stageFour.setVisible(true);
-                        getChildren().remove(stageTwo);
-                    });
                 });
             } else {
                 tt.play();
                 tt2.play();
-                tt.setOnFinished(event1 -> {
-                    stageFour.setVisible(true);
-                    getChildren().remove(stageTwo);
-                });
             }
+
+            tt.setOnFinished(event1 -> {
+                stageFour.setVisible(true);
+                getChildren().remove(stageTwo);
+            });
+
+            tt2.setOnFinished(event1 -> {
+                currentIsStageFour();
+            });
+
         });
 
         stageTwo_backButton.setOnMouseClicked(event -> {
@@ -153,24 +162,24 @@ public class MenuHandler extends Parent implements ButtonsInterface {
             if (!lastClickedButton.isVisible()) {
                 lastClickedButton.setVisible(true);
             }
+            getChildren().add(stageOne);
             if (lastClickedButton.isClicked()) {
                 lastClickedButton.getBackButton().setOnFinished(event1 -> {
-                    getChildren().add(stageOne);
                     tt.play();
                     tt2.play();
-                    tt.setOnFinished(event2 -> {
-                        getChildren().remove(stageTwo);
-                    });
                 });
             } else {
-                getChildren().add(stageOne);
                 tt.play();
                 tt2.play();
-                tt.setOnFinished(event2 -> {
-                    getChildren().remove(stageTwo);
-                });
             }
 
+            tt.setOnFinished(event2 -> {
+                getChildren().remove(stageTwo);
+            });
+
+            tt2.setOnFinished(event1 -> {
+                currentIsStageOne();
+            });
         });
 
         stageThree_backButton.setOnMouseClicked(event -> {
@@ -190,6 +199,10 @@ public class MenuHandler extends Parent implements ButtonsInterface {
                 stageTwo.setVisible(true);
                 getChildren().remove(stageThree);
             });
+
+            tt2.setOnFinished(event1 -> {
+                currentIsStageTwo();
+            });
         });
 
         stageFour_backButton.setOnMouseClicked(event -> {
@@ -208,7 +221,45 @@ public class MenuHandler extends Parent implements ButtonsInterface {
                 stageTwo.setVisible(true);
                 getChildren().remove(stageFour);
             });
+
+            tt2.setOnFinished(event1 -> {
+                currentIsStageTwo();
+            });
         });
+    }
+
+    private void currentIsStageOne() {
+        currentStage.clear();
+        Menu.next = -1;
+        currentStage.add(resumeButton);
+        currentStage.add(optionButton);
+        currentStage.add(stageOne_exitButton);
+    }
+    private void currentIsStageTwo() {
+        currentStage.clear();
+        Menu.next = -1;
+        currentStage.add(resolutionButton);
+        currentStage.add(controllerButton);
+        currentStage.add(soundButton);
+        currentStage.add(stageTwo_backButton);
+    }
+    private void currentIsStageThree() {
+        currentStage.clear();
+        Menu.next = -1;
+        currentStage.add(fullHdButton);
+        currentStage.add(halfFullHdButton);
+        currentStage.add(hdButton);
+        currentStage.add(stageThree_backButton);
+    }
+    private void currentIsStageFour() {
+        currentStage.clear();
+        Menu.next = -1;
+        currentStage.add(resetButton);
+        currentStage.add(moveUpButton);
+        currentStage.add(moveDownButton);
+        currentStage.add(moveLeftButton);
+        currentStage.add(moveRightButton);
+        currentStage.add(stageFour_backButton);
     }
 
     public void deleteAdditives(GridPane stage) {
@@ -221,11 +272,6 @@ public class MenuHandler extends Parent implements ButtonsInterface {
         String keyPressed;
         tempButton = new Menu.MenuButton(existingKey, Menu.ButtonType.SMALL);
         tempButton.setTranslateX(10);
-        getScene().setOnKeyPressed(event -> {
-            if (event.getCode().isLetterKey() || event.getCode().isArrowKey()) {
-                tempButton.setText(event.getCode().toString());
-            }
-        });
         keyPressed = tempButton.getText();
         GridPane.setConstraints(tempButton, 1, row);
         stageFour.getChildren().add(tempButton);
