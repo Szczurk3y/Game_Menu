@@ -82,15 +82,17 @@ public class Menu extends Application implements WindowInterface, ButtonsInterfa
                 System.out.println("CAPSLOCK");
                 System.out.println("Next: " + next);
             } else if(event.getCode() == KeyCode.ENTER) {
-                EventDispatcher dispatcher = new EventDispatcher() {
-                    @Override
-                    public Event dispatchEvent(Event event, EventDispatchChain tail) {
-                        event.getEventType();
+//                System.out.println(
 
-                        return EventType;
-                    }
-                };
-                currentStage.get(next).getEventDispatcher().dispatchEvent();
+//                );
+//                EventDispatcher dispatcher = new EventDispatcher() {
+//                    @Override
+//                    public Event dispatchEvent(Event event, EventDispatchChain tail) {
+//
+//                        return
+//                    }
+//                };
+//                currentStage.get(next).getEventDispatcher().dispatchEvent();
 //                try {
 //                    Robot robot = new Robot();
 //                    robot.mouseMove((int)currentStage. (int)currentStage.get(next).getScaleY());

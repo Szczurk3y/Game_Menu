@@ -2,5 +2,5 @@ UP
 DOWN
 LEFT
 RIGHT
-2
-31
+0
+37
